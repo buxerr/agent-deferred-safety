@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-deferred-safety"
+version = "0.1.0"
+description = "Audit and journal permission-sensitive tool execution across agent resumes."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = ["agent-sdk", "tool-calling", "security", "deferred-tools", "resume", "authorization", "idempotency", "crash-recovery"]
+authors = [{ name = "Niko Filipic" }]
+dependencies = []
+
+[project.optional-dependencies]
+openai-repro = ["openai-agents>=0.23.1"]
+
+[project.urls]
+Repository = "https://github.com/buxerr/agent-deferred-safety"
+Issues = "https://github.com/buxerr/agent-deferred-safety/issues"
+
+[project.scripts]
+agent-resume-audit = "agent_deferred_safety.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
