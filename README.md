@@ -80,7 +80,7 @@ with ToolExecutionJournal("agent-safety.sqlite3") as journal:
 
 The `operation_key` must be namespaced and stable for the same real-world effect across retries. A `started` operation becomes `unknown` after a crash; the host must reconcile it with the destination before retrying. If the destination supports idempotency keys, use the same stable key there as well. This journal cannot provide exactly-once effects when the destination has no idempotency or reconciliation mechanism.
 
-The journal stores argument digests and JSON results in SQLite. It does not store raw arguments, but digests are not encryption; avoid sensitive result fields and protect the database with the host application's normal access controls. This feature is experimental and does not yet include SDK adapters or a validated crash reproducer.
+The journal stores argument digests and JSON results in SQLite. It does not store raw arguments, but digests are not encryption; avoid sensitive result fields and protect the database with the host application's normal access controls. The SDK examples are experimental integration demonstrations, not production adapters or proof of safe behavior for every SDK tool path.
 
 ## Run the local scenarios
 
@@ -91,7 +91,18 @@ python examples/crash_window_demo.py
 python examples/stale_approval_demo.py
 ```
 
-These two scenarios demonstrate the local journal only. The OpenAI reproduction below exercises the actual Agents SDK with its scripted model; the Anthropic crash issue still needs an SDK adapter and current-version evidence.
+The local scenarios demonstrate the journal contract. The SDK examples below connect that journal to real SDK hook and tool APIs. They use scripted/local model servers and make no provider API calls; their outcomes do not establish behavior for every SDK release or live model.
+
+### Claude Agent SDK deferred-tool recovery
+
+This no-API-key example uses Claude Agent SDK's `PreToolUse` hook to defer a tool call, then resume it across separate processes. It injects a stable idempotency key derived from the resumed session and Claude's tool-use ID. The destination uses a SQLite transaction to atomically record that key with the demo payment. The script crashes after the first transaction but before returning a tool result, then resumes again and reconciles the already-applied effect instead of applying it twice.
+
+```sh
+python -m pip install -e ".[claude-repro]"
+python examples/claude_deferred_journal_demo.py
+```
+
+The scripted server and SQLite destination make the recovery path deterministic. A production destination must provide its own atomic idempotency or reconciliation mechanism; the journal alone cannot guarantee exactly-once effects.
 
 ### OpenAI Agents SDK reproduction
 
@@ -118,3 +129,4 @@ Keywords: agent SDK resume bug, deferred tool permission check, AI agent securit
 ## License
 
 MIT
+
