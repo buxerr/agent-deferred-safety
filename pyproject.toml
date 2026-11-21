@@ -16,6 +16,7 @@ dependencies = []
 
 [project.optional-dependencies]
 openai-repro = ["openai-agents>=0.23.1"]
+claude-repro = ["claude-agent-sdk>=0.2.182"]
 
 [project.urls]
 Repository = "https://github.com/buxerr/agent-deferred-safety"
@@ -29,3 +30,4 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
